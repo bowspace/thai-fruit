@@ -209,19 +209,54 @@ const translations = {
         cn: '登录',
     },
     'login.desc': {
-        th: 'เชื่อมต่อบัญชี LINE ของคุณเพื่อเริ่มสั่งซื้อสินค้าและติดตามสถานะออเดอร์ได้สะดวกรวดเร็ว',
-        en: 'Connect your LINE account to start ordering and track your deliveries easily.',
-        cn: '连接您的LINE账号，轻松下单并追踪订单状态。',
+        th: 'เข้าสู่ระบบเพื่อเริ่มสั่งซื้อสินค้าและติดตามสถานะออเดอร์ได้สะดวกรวดเร็ว',
+        en: 'Sign in to start ordering and track your deliveries easily.',
+        cn: '登录后轻松下单并追踪订单状态。',
     },
-    'login.lineBtn': {
-        th: 'เข้าสู่ระบบด้วย LINE',
-        en: 'Sign in with LINE',
-        cn: '使用LINE登录',
+    'login.email': {
+        th: 'อีเมล',
+        en: 'Email',
+        cn: '邮箱',
+    },
+    'login.password': {
+        th: 'รหัสผ่าน',
+        en: 'Password',
+        cn: '密码',
+    },
+    'login.name': {
+        th: 'ชื่อ',
+        en: 'Name',
+        cn: '姓名',
+    },
+    'login.loginBtn': {
+        th: 'เข้าสู่ระบบ',
+        en: 'Sign In',
+        cn: '登录',
+    },
+    'login.signupBtn': {
+        th: 'สมัครสมาชิก',
+        en: 'Sign Up',
+        cn: '注册',
+    },
+    'login.switchSignup': {
+        th: 'ยังไม่มีบัญชี? สมัครสมาชิก',
+        en: "Don't have an account? Sign Up",
+        cn: '没有账号？注册',
+    },
+    'login.switchLogin': {
+        th: 'มีบัญชีแล้ว? เข้าสู่ระบบ',
+        en: 'Already have an account? Sign In',
+        cn: '已有账号？登录',
+    },
+    'login.testLogin': {
+        th: 'ทดลองใช้งาน (บัญชีทดสอบ)',
+        en: 'Try it out (Test Account)',
+        cn: '试用（测试账号）',
     },
     'login.note': {
-        th: 'ระบบจะขอสิทธิ์เข้าถึงชื่อและรูปโปรไฟล์ LINE เท่านั้น ไม่มีการโพสต์ลงไทม์ไลน์ของคุณ',
-        en: 'We only access your name and profile picture. We never post on your timeline.',
-        cn: '我们仅获取您的姓名和头像，不会发布任何内容到您的时间线。',
+        th: 'ข้อมูลของคุณจะถูกเก็บรักษาอย่างปลอดภัย',
+        en: 'Your data is kept secure and private.',
+        cn: '您的数据将被安全保存。',
     },
 
     // Footer

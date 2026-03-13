@@ -1,11 +1,10 @@
 import { useMemo } from 'react';
 import { ShoppingCart, Star, MapPin, Store as StoreIcon } from 'lucide-react';
-import { CATEGORIES } from '../data/mockData';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LangContext';
 
 export default function Home({ searchQuery, categoryFilter, setCategoryFilter, onProductClick, onStoreClick }) {
-    const { products, stores } = useApp();
+    const { products, stores, categories: CATEGORIES } = useApp();
     const { t, locField } = useLang();
 
     const filteredProducts = useMemo(() => {

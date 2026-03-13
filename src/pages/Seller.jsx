@@ -4,13 +4,12 @@ import {
     Store, Package, ShoppingBag, Settings, Plus, MapPin, Phone,
     TrendingUp, Star, Search, Filter
 } from 'lucide-react';
-import { CATEGORIES } from '../data/mockData';
-
 export default function Seller({ onLoginClick }) {
-    const { user, stores, products, orders, addProduct, updateStore } = useApp();
+    const { user, stores, products, orders, addProduct, updateStore, categories } = useApp();
+    const CATEGORIES = categories;
     const [tab, setTab] = useState('dashboard');
 
-    const myStore = stores[0]; // MOCK: assumption current user owns the first store
+    const myStore = user ? stores.find(s => s.ownerId === user.id) : null;
     const myOrders = orders.filter((o) => o.storeId === myStore?.id);
     const myProducts = products.filter((p) => p.storeId === myStore?.id);
 
