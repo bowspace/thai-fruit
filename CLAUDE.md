@@ -4,6 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 > **RULE: Always update this file when features are added, changed, or removed.** Keep architecture, routing, i18n, and file structure sections accurate so future sessions start with correct context. If you modify routing pages, add translation keys, create/delete components, or change conventions — reflect it here before finishing the task.
 
+## Design System
+
+**Before touching any UI/frontend code, read `.impeccable.md` at the project root.** It is the source of truth for tokens, component inventory, patterns, and do/don'ts — and it is picked up automatically by the `impeccable` skill (invoke with `/impeccable craft <feature>` to shape-then-build a new feature in-style, or `/impeccable extract` to refresh the inventory when new patterns solidify). Keep `.impeccable.md` updated when the aesthetic direction or tokens change.
+
 ## Project Overview
 
 **ThaiFruit** — a multilingual online Thai fruit marketplace. Buyers browse/search fruit products from farmer stores, view product details, add to cart, and place orders. Sellers manage their store and products. Supports Thai, English, and Chinese.
