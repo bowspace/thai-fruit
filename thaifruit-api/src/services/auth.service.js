@@ -1,22 +1,23 @@
-import { supabaseAdmin } from '../config/supabase.js';
+import { supabaseAdmin, supabaseAnon } from '../config/supabase.js';
 
 export async function signup({ email, password, name, role }) {
-  // Create auth user
+  // Create auth user with metadata so the trigger creates the correct profile
   const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
     email,
     password,
     email_confirm: true,
+    user_metadata: { name, role },
   });
   if (authError) throw authError;
 
-  // Create profile
+  // Upsert profile in case the trigger already created it
   const { error: profileError } = await supabaseAdmin
     .from('profiles')
-    .insert({ id: authData.user.id, name, role });
+    .upsert({ id: authData.user.id, name, role }, { onConflict: 'id' });
   if (profileError) throw profileError;
 
   // Sign in to get session
-  const { data: session, error: loginError } = await supabaseAdmin.auth.signInWithPassword({
+  const { data: session, error: loginError } = await supabaseAnon.auth.signInWithPassword({
     email,
     password,
   });
@@ -29,7 +30,7 @@ export async function signup({ email, password, name, role }) {
 }
 
 export async function login({ email, password }) {
-  const { data, error } = await supabaseAdmin.auth.signInWithPassword({
+  const { data, error } = await supabaseAnon.auth.signInWithPassword({
     email,
     password,
   });

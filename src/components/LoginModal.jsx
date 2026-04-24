@@ -10,6 +10,7 @@ export default function LoginModal({ onClose }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
+    const [role, setRole] = useState('buyer');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -20,7 +21,7 @@ export default function LoginModal({ onClose }) {
         if (mode === 'login') {
             success = await login(email, password);
         } else {
-            success = await signup(email, password, name);
+            success = await signup(email, password, name, role);
         }
         setLoading(false);
         if (success) onClose();
@@ -48,17 +49,47 @@ export default function LoginModal({ onClose }) {
 
                     <form onSubmit={handleSubmit} style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
                         {mode === 'signup' && (
-                            <div style={{ position: 'relative' }}>
-                                <User size={18} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
-                                <input
-                                    type="text"
-                                    placeholder={t('login.name') || 'ชื่อ'}
-                                    value={name}
-                                    onChange={e => setName(e.target.value)}
-                                    required
-                                    style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: 12, border: '1px solid var(--border)', fontSize: 15, boxSizing: 'border-box' }}
-                                />
-                            </div>
+                            <>
+                                <div style={{ position: 'relative' }}>
+                                    <User size={18} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
+                                    <input
+                                        type="text"
+                                        placeholder={t('login.name') || 'ชื่อ'}
+                                        value={name}
+                                        onChange={e => setName(e.target.value)}
+                                        required
+                                        style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: 12, border: '1px solid var(--border)', fontSize: 15, boxSizing: 'border-box' }}
+                                    />
+                                </div>
+                                <div style={{ display: 'flex', gap: 8 }}>
+                                    <button
+                                        type="button"
+                                        onClick={() => setRole('buyer')}
+                                        style={{
+                                            flex: 1, padding: '10px', borderRadius: 12, fontSize: 14, cursor: 'pointer',
+                                            border: role === 'buyer' ? '2px solid var(--primary)' : '1px solid var(--border)',
+                                            background: role === 'buyer' ? 'var(--primary-light, #f0fdf4)' : 'var(--bg)',
+                                            color: role === 'buyer' ? 'var(--primary)' : 'var(--text-secondary)',
+                                            fontWeight: role === 'buyer' ? 600 : 400,
+                                        }}
+                                    >
+                                        🛒 {t('login.roleBuyer')}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setRole('seller')}
+                                        style={{
+                                            flex: 1, padding: '10px', borderRadius: 12, fontSize: 14, cursor: 'pointer',
+                                            border: role === 'seller' ? '2px solid var(--primary)' : '1px solid var(--border)',
+                                            background: role === 'seller' ? 'var(--primary-light, #f0fdf4)' : 'var(--bg)',
+                                            color: role === 'seller' ? 'var(--primary)' : 'var(--text-secondary)',
+                                            fontWeight: role === 'seller' ? 600 : 400,
+                                        }}
+                                    >
+                                        🏪 {t('login.roleSeller')}
+                                    </button>
+                                </div>
+                            </>
                         )}
 
                         <div style={{ position: 'relative' }}>

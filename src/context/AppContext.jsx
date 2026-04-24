@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback, useEffect } from 'rea
 import { supabase } from '../lib/supabase';
 
 const AppContext = createContext(null);
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
 
 // Transform DB snake_case rows to frontend camelCase
 function mapStore(s) {
@@ -107,52 +108,78 @@ export function AppProvider({ children }) {
         setTimeout(() => setToast(null), 3000);
     }, []);
 
-    // Auth: login with email/password via Supabase Auth
+    // Auth: login via backend API (handles email confirmation properly)
     const login = useCallback(async (email, password) => {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-            showToast(error.message, 'error');
+        try {
+            const res = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                showToast(data.error || data.message || 'Login failed', 'error');
+                return false;
+            }
+
+            // Set Supabase session so client is authenticated for RLS
+            if (data.session) {
+                await supabase.auth.setSession({
+                    access_token: data.session.access_token,
+                    refresh_token: data.session.refresh_token,
+                });
+            }
+
+            setUser({
+                id: data.user.id,
+                email: email,
+                name: data.user.name || email,
+                nameEn: data.user.name_en,
+                avatar: data.user.avatar_url,
+                role: data.user.role || 'buyer',
+            });
+            showToast('เข้าสู่ระบบสำเร็จ! ยินดีต้อนรับ ' + (data.user.name || email));
+            return true;
+        } catch (err) {
+            showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้', 'error');
             return false;
         }
-        // Fetch profile
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', data.user.id)
-            .single();
-
-        setUser({
-            id: data.user.id,
-            email: data.user.email,
-            name: profile?.name || data.user.email,
-            nameEn: profile?.name_en,
-            avatar: profile?.avatar_url,
-            role: profile?.role || 'buyer',
-            lineId: profile?.line_id,
-        });
-        showToast('เข้าสู่ระบบสำเร็จ! ยินดีต้อนรับ ' + (profile?.name || data.user.email));
-        return true;
     }, [showToast]);
 
-    // Auth: signup
+    // Auth: signup via backend API (auto-confirms email)
     const signup = useCallback(async (email, password, name, role = 'buyer') => {
-        const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
-            options: { data: { name, role } },
-        });
-        if (error) {
-            showToast(error.message, 'error');
+        try {
+            const res = await fetch(`${API_URL}/auth/signup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, name, role }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                showToast(data.error || data.message || 'Signup failed', 'error');
+                return false;
+            }
+
+            // Set Supabase session so client is authenticated for RLS
+            if (data.session) {
+                await supabase.auth.setSession({
+                    access_token: data.session.access_token,
+                    refresh_token: data.session.refresh_token,
+                });
+            }
+
+            setUser({
+                id: data.user.id,
+                email: email,
+                name: name,
+                role: role,
+            });
+            showToast('สมัครสมาชิกสำเร็จ! ยินดีต้อนรับ ' + name);
+            return true;
+        } catch (err) {
+            showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้', 'error');
             return false;
         }
-        setUser({
-            id: data.user.id,
-            email: data.user.email,
-            name: name,
-            role: role,
-        });
-        showToast('สมัครสมาชิกสำเร็จ! ยินดีต้อนรับ ' + name);
-        return true;
     }, [showToast]);
 
     const logout = useCallback(async () => {

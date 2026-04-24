@@ -253,6 +253,16 @@ const translations = {
         en: 'Try it out (Test Account)',
         cn: '试用（测试账号）',
     },
+    'login.roleBuyer': {
+        th: 'ผู้ซื้อ',
+        en: 'Buyer',
+        cn: '买家',
+    },
+    'login.roleSeller': {
+        th: 'ผู้ขาย',
+        en: 'Seller',
+        cn: '卖家',
+    },
     'login.note': {
         th: 'ข้อมูลของคุณจะถูกเก็บรักษาอย่างปลอดภัย',
         en: 'Your data is kept secure and private.',
