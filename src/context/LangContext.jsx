@@ -417,6 +417,11 @@ const translations = {
         en: 'Farm pickup available',
         cn: '可到园自提',
     },
+    'cart.farmDirect': {
+        th: 'ส่งตรงจากเกษตรกร · ไม่มีพ่อค้าคนกลาง',
+        en: 'Direct from farmers · No middlemen',
+        cn: '直接来自农户 · 无中间商',
+    },
 };
 
 export function LangProvider({ children }) {
