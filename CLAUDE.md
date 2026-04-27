@@ -161,9 +161,7 @@ thaifruit-api/
 
 ## Pending / Known Gaps
 
-- `StoreDetail.jsx` and `Seller.jsx` still have hardcoded Thai text (not yet routed through `t()`)
 - Toast messages in `AppContext.jsx` are hardcoded Thai strings
 - `ProductModal.jsx` is deprecated but still in repo — safe to delete
 - `src/data/mockData.js` is orphaned (no imports) — safe to delete
-- Search bar hidden on mobile with no alternative
-- `Cart.removeFromCart` bug: `Cart.jsx:80` passes the index within the per-store grouped list to `removeFromCart`, but `AppContext.removeFromCart` treats it as an index into the full `cart` array — removes the wrong item when the cart contains multiple stores
+- Search bar hidden on mobile with no alternative (mobile search sheet not yet built)
