@@ -83,6 +83,26 @@ const translations = {
         en: 'Featured Farms & Orchards',
         cn: '推荐果园和店铺',
     },
+    'section.farmers': {
+        th: 'พบกับเกษตรกร',
+        en: 'Meet our farmers',
+        cn: '认识我们的农户',
+    },
+    'section.season': {
+        th: 'ผลไม้ตามฤดูกาล',
+        en: 'What’s in season',
+        cn: '当季水果',
+    },
+    'section.seasonDesc': {
+        th: 'เก็บเกี่ยวในช่วงเวลาที่หวานที่สุดของปี',
+        en: 'Picked at peak ripeness, this week',
+        cn: '本周最新鲜的当季水果',
+    },
+    'season.view': {
+        th: 'ดูสินค้า',
+        en: 'View',
+        cn: '查看',
+    },
     'section.seasonal': {
         th: 'ผลไม้ขายดีประจำฤดูกาล',
         en: 'Best-Selling Seasonal Fruits',

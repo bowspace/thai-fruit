@@ -585,7 +585,7 @@ input, textarea, select {
 }
 
 .product-img {
-  height: 180px;
+  aspect-ratio: 4 / 5;
   background: linear-gradient(135deg, var(--primary-lighter) 0%, #dff0e4 100%);
   display: flex;
   align-items: center;
@@ -2079,6 +2079,264 @@ input, textarea, select {
   background: var(--primary-lighter);
   color: var(--primary);
   font-weight: 700;
+}
+
+/* ====================================
+   HOME — CATEGORY SHELF (circular chips)
+   ==================================== */
+.category-shelf {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.category-shelf::-webkit-scrollbar { display: none; }
+
+.category-shelf-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  gap: var(--space-6);
+  padding: var(--space-5) var(--space-6);
+}
+
+.category-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.2s var(--ease);
+}
+
+.category-chip-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background: var(--primary-lighter);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  border: 2px solid transparent;
+  transition: all 0.25s var(--spring);
+}
+
+.category-chip:hover .category-chip-circle {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.category-chip.active .category-chip-circle {
+  border-color: var(--primary);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-glow);
+}
+
+.category-chip-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.category-chip.active .category-chip-label {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* ====================================
+   HOME — EDITORIAL HERO MODIFIER
+   ==================================== */
+.hero--editorial {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero--editorial .hero-content {
+  padding: var(--space-12);
+  max-width: 600px;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(34px, 5vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: white;
+  margin-bottom: var(--space-3);
+}
+
+.hero-title-display {
+  display: inline-block;
+  color: var(--accent);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.hero-stats--inline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+}
+
+.hero-stats--inline b {
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  margin-right: 4px;
+}
+
+.hero-stat-divider {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.hero-mark {
+  position: absolute;
+  right: -56px;
+  bottom: -64px;
+  font-size: 360px;
+  line-height: 1;
+  opacity: 0.16;
+  pointer-events: none;
+  user-select: none;
+  transform: rotate(-12deg);
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .hero--editorial .hero-content { padding: var(--space-8); }
+  .hero-mark { font-size: 220px; right: -40px; bottom: -40px; }
+}
+
+/* ====================================
+   SECTION TITLE — DISPLAY MODIFIER
+   ==================================== */
+.section-title--display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(22px, 2.6vw, 30px);
+  letter-spacing: -0.01em;
+}
+
+/* ====================================
+   HOME — FARMERS RAIL (horizontal scroll)
+   ==================================== */
+.farmers-rail {
+  display: flex;
+  gap: var(--space-5);
+  overflow-x: auto;
+  padding: var(--space-2) var(--space-6) var(--space-4);
+  margin: 0 calc(-1 * var(--space-6));
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+}
+
+.farmers-rail::-webkit-scrollbar { height: 6px; }
+.farmers-rail::-webkit-scrollbar-thumb { background: var(--border); border-radius: var(--radius-full); }
+
+.store-card--rail {
+  flex: 0 0 320px;
+  scroll-snap-align: start;
+}
+
+@media (min-width: 769px) {
+  .store-card--rail { flex: 0 0 360px; }
+}
+
+/* ====================================
+   HOME — IN SEASON STRIP
+   ==================================== */
+.season-strip {
+  margin-bottom: var(--space-12);
+}
+
+.season-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-5);
+}
+
+.season-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s var(--ease);
+}
+
+.season-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-light);
+}
+
+.season-card-num {
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--primary-lighter);
+  line-height: 1;
+  margin-bottom: var(--space-2);
+}
+
+.season-card-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+
+.season-card-fruit {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.1;
+  margin-bottom: var(--space-4);
+}
+
+.season-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  transition: gap 0.2s var(--ease);
+}
+
+.season-card:hover .season-card-link { gap: var(--space-3); }
+
+.season-card-emoji {
+  position: absolute;
+  right: -12px;
+  bottom: -20px;
+  font-size: 96px;
+  line-height: 1;
+  opacity: 0.18;
+  pointer-events: none;
+  transform: rotate(-8deg);
 }
 
 /* ====================================
