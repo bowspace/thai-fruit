@@ -422,6 +422,48 @@ const translations = {
         en: 'Direct from farmers · No middlemen',
         cn: '直接来自农户 · 无中间商',
     },
+
+    // Store Detail
+    'store.backHome': {
+        th: 'กลับไปหน้าหลัก',
+        en: 'Back to home',
+        cn: '返回首页',
+    },
+    'store.notFound': {
+        th: 'ไม่พบข้อมูลร้านค้า',
+        en: 'Store not found',
+        cn: '未找到该店铺',
+    },
+    'store.tendedBy': {
+        th: 'ดูแลโดย',
+        en: 'Tended by',
+        cn: '由',
+    },
+    'store.reviews': {
+        th: 'รีวิว',
+        en: 'reviews',
+        cn: '评价',
+    },
+    'store.pickupAt': {
+        th: 'จุดรับสินค้า',
+        en: 'Pickup at',
+        cn: '取货点',
+    },
+    'store.todayAt': {
+        th: 'วันนี้ที่ {name}',
+        en: 'Today at {name}',
+        cn: '今日在 {name}',
+    },
+    'store.preparing': {
+        th: 'ร้านนี้กำลังเตรียมผลผลิต',
+        en: 'This farm is preparing the next harvest',
+        cn: '该农场正在准备下一批产品',
+    },
+    'store.preparingDesc': {
+        th: 'ฤดูกาลถัดไปจะมาอัปเดตสินค้าเพิ่มเติม โปรดติดตาม',
+        en: 'New products coming next season — stay tuned',
+        cn: '下个季节将上新商品，敬请期待',
+    },
 };
 
 export function LangProvider({ children }) {

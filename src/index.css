@@ -1954,57 +1954,115 @@ input, textarea, select {
 }
 
 /* ====================================
-   STORE DETAIL PAGE
+   STORE DETAIL PAGE — cinematic cover
    ==================================== */
-.store-detail-header {
-  background: var(--bg-card);
+.store-detail-cover {
+  position: relative;
   border-radius: var(--radius-xl);
-  border: 1px solid var(--border);
-  padding: 32px;
-  margin-bottom: 28px;
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+  min-height: 320px;
   display: flex;
-  gap: 24px;
-  align-items: center;
-  box-shadow: var(--shadow-sm);
+  align-items: flex-end;
+  isolation: isolate;
 }
 
-.store-detail-avatar {
-  width: 80px;
-  height: 80px;
-  background: var(--primary-lighter);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 40px;
-  flex-shrink: 0;
-  box-shadow: var(--shadow);
+.store-detail-cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(13, 74, 40, 0.15) 0%, rgba(13, 74, 40, 0.85) 100%);
+  z-index: 1;
 }
 
-.store-detail-name {
-  font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 4px;
+.store-detail-cover-mark {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-6);
+  font-size: 220px;
+  line-height: 1;
+  opacity: 0.16;
+  transform: rotate(-12deg);
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
 }
 
-.store-detail-owner {
+.store-detail-cover-body {
+  position: relative;
+  z-index: 2;
+  padding: var(--space-12);
+  color: white;
+  width: 100%;
+}
+
+.store-detail-cover-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-2);
+  color: white;
+}
+
+.store-detail-cover-owner {
   font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: var(--space-3);
 }
 
-.store-detail-info {
+.store-detail-cover-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+@media (max-width: 768px) {
+  .store-detail-cover { min-height: 240px; }
+  .store-detail-cover-body { padding: var(--space-8); }
+  .store-detail-cover-mark { font-size: 140px; right: -10px; top: -10px; }
+}
+
+.store-detail-ribbon {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-8);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-6);
+  margin-bottom: var(--space-6);
   font-size: 13px;
   color: var(--text-secondary);
 }
 
-.store-detail-info-item {
+.store-detail-ribbon-item {
   display: flex;
-  align-items: flex-start;
-  gap: 8px;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.store-detail-ribbon-item strong {
+  color: var(--text);
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.store-detail-about {
+  margin-bottom: var(--space-8);
+  max-width: 64ch;
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--text-secondary);
 }
 
 /* ====================================
