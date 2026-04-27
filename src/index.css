@@ -66,7 +66,7 @@
 
   /* Typography stacks */
   --font-body: 'Inter', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-display: 'Fraunces', 'Noto Serif Thai', Georgia, serif;
+  --font-display: 'Mitr', 'Noto Sans Thai', sans-serif;
 
   /* Spacing — 4pt scale */
   --space-1: 4px;
@@ -1043,12 +1043,12 @@ input, textarea, select {
 
 .cart-item-price {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
   color: var(--orange);
   min-width: 90px;
   text-align: right;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.005em;
 }
 
 .cart-item-remove {
@@ -1086,9 +1086,9 @@ input, textarea, select {
 
 .cart-summary-title {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 24px;
-  letter-spacing: -0.01em;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.005em;
   color: var(--text);
   margin-bottom: var(--space-5);
 }
@@ -1220,11 +1220,11 @@ input, textarea, select {
 
 .stat-num {
   font-family: var(--font-display);
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 600;
   color: var(--primary);
   margin-top: 8px;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1770,10 +1770,10 @@ input, textarea, select {
 
 .pd-product-name {
   font-family: var(--font-display);
-  font-size: clamp(32px, 4vw, 48px);
-  font-weight: 600;
-  line-height: 1.05;
-  letter-spacing: -0.015em;
+  font-size: clamp(28px, 3.6vw, 42px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
   margin-bottom: var(--space-3);
 }
 
@@ -1788,9 +1788,9 @@ input, textarea, select {
 .pd-price-display {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(48px, 6vw, 72px);
-  line-height: 0.95;
-  letter-spacing: -0.03em;
+  font-size: clamp(44px, 5.6vw, 64px);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
   color: var(--orange);
   margin: var(--space-2) 0 var(--space-1);
   display: flex;
@@ -1990,10 +1990,10 @@ input, textarea, select {
 
 .seller-header-name {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: clamp(20px, 2.4vw, 28px);
-  letter-spacing: -0.01em;
-  line-height: 1.15;
+  font-weight: 500;
+  font-size: clamp(20px, 2.4vw, 26px);
+  letter-spacing: -0.005em;
+  line-height: 1.25;
   margin-bottom: 2px;
 }
 
@@ -2053,10 +2053,10 @@ input, textarea, select {
 
 .add-product-preview-title {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 18px;
+  font-weight: 500;
+  font-size: 17px;
   margin-bottom: 4px;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.005em;
 }
 
 .add-product-preview-hint {
@@ -2118,9 +2118,9 @@ input, textarea, select {
 .store-detail-cover-name {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(36px, 5vw, 56px);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  font-size: clamp(32px, 4.6vw, 50px);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
   margin-bottom: var(--space-2);
   color: white;
 }
@@ -2468,8 +2468,8 @@ input, textarea, select {
   font-family: var(--font-display);
   font-weight: 600;
   font-size: clamp(34px, 5vw, 56px);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
   color: white;
   margin-bottom: var(--space-3);
 }
@@ -2477,7 +2477,6 @@ input, textarea, select {
 .hero-title-display {
   display: inline-block;
   color: var(--accent);
-  font-style: italic;
   font-weight: 500;
 }
 
@@ -2525,9 +2524,9 @@ input, textarea, select {
    ==================================== */
 .section-title--display {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: clamp(22px, 2.6vw, 30px);
-  letter-spacing: -0.01em;
+  font-weight: 500;
+  font-size: clamp(22px, 2.6vw, 28px);
+  letter-spacing: -0.005em;
 }
 
 /* ====================================
@@ -2589,10 +2588,10 @@ input, textarea, select {
   font-family: var(--font-display);
   font-size: 64px;
   font-weight: 300;
-  font-style: italic;
   color: var(--primary-lighter);
   line-height: 1;
   margin-bottom: var(--space-2);
+  letter-spacing: -0.02em;
 }
 
 .season-card-meta {
@@ -2606,10 +2605,10 @@ input, textarea, select {
 
 .season-card-fruit {
   font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 500;
   color: var(--text);
-  line-height: 1.1;
+  line-height: 1.2;
   margin-bottom: var(--space-4);
 }
 
