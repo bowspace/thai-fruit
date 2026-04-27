@@ -464,6 +464,171 @@ const translations = {
         en: 'New products coming next season — stay tuned',
         cn: '下个季节将上新商品，敬请期待',
     },
+
+    // Seller — gate / title
+    'seller.loginPrompt': {
+        th: 'ผู้ขายโปรดเข้าสู่ระบบ',
+        en: 'Sellers, please sign in',
+        cn: '卖家请先登录',
+    },
+    'seller.loginDesc': {
+        th: 'เชื่อมต่อบัญชีเพื่อจัดการร้านค้า ออเดอร์ และสินค้าของคุณ',
+        en: 'Sign in to manage your store, orders, and products',
+        cn: '登录以管理您的店铺、订单和商品',
+    },
+    'seller.title': {
+        th: 'ระบบจัดการร้านค้า — {name}',
+        en: 'Store Workshop — {name}',
+        cn: '店铺管理 — {name}',
+    },
+    'seller.workshop': {
+        th: 'ระบบจัดการร้านค้า',
+        en: 'Store Workshop',
+        cn: '店铺管理',
+    },
+    'seller.openToday': {
+        th: 'เปิดรับออเดอร์วันนี้',
+        en: 'Open today',
+        cn: '今日开放',
+    },
+    'seller.tab.dashboard': { th: '📊 ภาพรวม', en: '📊 Overview', cn: '📊 概览' },
+    'seller.tab.orders': { th: '📦 ออเดอร์', en: '📦 Orders', cn: '📦 订单' },
+    'seller.tab.products': { th: '🍎 สินค้า', en: '🍎 Products', cn: '🍎 商品' },
+    'seller.tab.add': { th: '➕ เพิ่มสินค้า', en: '➕ Add product', cn: '➕ 添加商品' },
+    'seller.tab.settings': { th: '⚙️ ตั้งค่าร้าน', en: '⚙️ Store settings', cn: '⚙️ 店铺设置' },
+
+    // Seller — stats
+    'seller.stat.orders': { th: 'ออเดอร์ทั้งหมด', en: 'Total orders', cn: '订单总数' },
+    'seller.stat.revenue': { th: 'ยอดขายรวม', en: 'Total revenue', cn: '总销售额' },
+    'seller.stat.products': { th: 'สินค้าในร้าน', en: 'Products in store', cn: '在售商品' },
+    'seller.stat.rating': { th: 'คะแนนเฉลี่ย', en: 'Average rating', cn: '平均评分' },
+    'seller.stat.fromReviews': { th: 'จาก {n} รีวิว', en: 'from {n} reviews', cn: '基于 {n} 条评价' },
+
+    // Seller — orders table
+    'seller.recentOrders': { th: 'ออเดอร์ล่าสุด', en: 'Recent orders', cn: '最近订单' },
+    'seller.noOrders': { th: 'ยังไม่มีออเดอร์ในขณะนี้', en: 'No orders yet', cn: '暂无订单' },
+    'seller.noOrdersFull': {
+        th: 'ยังไม่มีออเดอร์',
+        en: 'No orders yet — your first order will appear here',
+        cn: '暂无订单 — 第一个订单将出现在这里',
+    },
+    'seller.col.orderNo': { th: 'เลขที่สั่งซื้อ', en: 'Order #', cn: '订单号' },
+    'seller.col.buyer': { th: 'ผู้ซื้อ', en: 'Buyer', cn: '买家' },
+    'seller.col.items': { th: 'รายการสินค้า', en: 'Items', cn: '商品' },
+    'seller.col.note': { th: 'หมายเหตุ', en: 'Note', cn: '备注' },
+    'seller.col.total': { th: 'ยอดสุทธิ', en: 'Total', cn: '总价' },
+    'seller.col.status': { th: 'สถานะ', en: 'Status', cn: '状态' },
+    'seller.col.date': { th: 'วันที่', en: 'Date', cn: '日期' },
+    'seller.searchOrder': {
+        th: 'ค้นหาเลขออเดอร์ หรือชื่อลูกค้า...',
+        en: 'Search order # or customer...',
+        cn: '搜索订单号或客户...',
+    },
+    'seller.filterStatus': { th: 'กรองสถานะ', en: 'Filter status', cn: '筛选状态' },
+
+    // Seller — order status
+    'seller.status.pending': { th: 'รอยืนยัน', en: 'Pending', cn: '待确认' },
+    'seller.status.confirmed': { th: 'ยืนยันแล้ว', en: 'Confirmed', cn: '已确认' },
+    'seller.status.shipped': { th: 'จัดส่งแล้ว', en: 'Shipped', cn: '已发货' },
+    'seller.status.done': { th: 'เสร็จสิ้น', en: 'Done', cn: '完成' },
+
+    // Seller — products tab
+    'seller.noProducts': {
+        th: 'ยังไม่มีสินค้าในร้าน กดปุ่ม "เพิ่มสินค้า" เพื่อเริ่มขาย',
+        en: 'No products yet — click “Add product” to start selling',
+        cn: '暂无商品 — 点击「添加商品」开始销售',
+    },
+
+    // Seller — add product form
+    'seller.add.title': { th: 'เพิ่มสินค้าใหม่', en: 'Add a new product', cn: '添加新商品' },
+    'seller.form.name': { th: 'ชื่อสินค้า *', en: 'Product name *', cn: '商品名称 *' },
+    'seller.form.namePh': {
+        th: 'เช่น ส้มสายน้ำผึ้ง เกรด A, ทุเรียนหมอนทอง จันทบุรี',
+        en: 'e.g. Honey-sweet oranges Grade A, Monthong durian from Chanthaburi',
+        cn: '例如：A 级蜜柑、尖竹汶金枕榴莲',
+    },
+    'seller.form.desc': { th: 'คำอธิบาย', en: 'Description', cn: '描述' },
+    'seller.form.descPh': {
+        th: 'บรรยายลักษณะสินค้า รสชาติ แหล่งปลูก วิธีการเก็บรักษา...',
+        en: 'Describe taste, origin, storage tips...',
+        cn: '描述口感、产地、储存方式...',
+    },
+    'seller.form.category': { th: 'หมวดหมู่ผลไม้ *', en: 'Fruit category *', cn: '水果类别 *' },
+    'seller.form.categoryPh': { th: 'เลือกหมวดหมู่', en: 'Select a category', cn: '选择类别' },
+    'seller.form.others': { th: 'อื่นๆ', en: 'Others', cn: '其他' },
+    'seller.form.images': { th: 'รูปภาพสินค้า', en: 'Product images', cn: '商品图片' },
+    'seller.form.imagesHint': {
+        th: 'อัปโหลดได้สูงสุด 5 รูป (รูปแบบ JPG, PNG)',
+        en: 'Up to 5 images (JPG, PNG)',
+        cn: '最多 5 张 (JPG / PNG)',
+    },
+    'seller.form.imagesUpload': {
+        th: 'คลิกเพื่อเลือกไฟล์รูปภาพ',
+        en: 'Click to choose images',
+        cn: '点击选择图片',
+    },
+    'seller.form.imagesMock': {
+        th: 'MOCK: จะใช้รูปตัวอย่างรวมผลไม้',
+        en: 'MOCK: a sample collage will be used',
+        cn: '模拟：将使用示例图片',
+    },
+    'seller.form.units': { th: 'ตัวเลือกขนาด / หน่วยการขาย / ราคา *', en: 'Sizes / units / prices *', cn: '规格 / 单位 / 价格 *' },
+    'seller.form.unitCol': {
+        th: 'หน่วย/ขนาด',
+        en: 'Unit / Size',
+        cn: '单位 / 规格',
+    },
+    'seller.form.unitColHint': {
+        th: '(เช่น กิโลกรัม, ลัง 10 กก.)',
+        en: '(e.g. kg, crate of 10 kg)',
+        cn: '（例如：千克、10公斤箱）',
+    },
+    'seller.form.priceCol': { th: 'ราคา (บาท)', en: 'Price (THB)', cn: '价格 (泰铢)' },
+    'seller.form.unitPh': {
+        th: 'เช่น กิโลกรัม, ลัง, แพ็ค',
+        en: 'e.g. kg, crate, pack',
+        cn: '例如：千克、箱、包',
+    },
+    'seller.form.addUnit': {
+        th: '+ เพิ่มตัวเลือกหน่วยการขาย',
+        en: '+ Add a unit option',
+        cn: '+ 添加单位选项',
+    },
+    'seller.save': { th: 'บันทึกสินค้า', en: 'Save product', cn: '保存商品' },
+    'seller.cancel': { th: 'ยกเลิก', en: 'Cancel', cn: '取消' },
+    'seller.requiredAlert': {
+        th: 'กรุณากรอกข้อมูลสำคัญให้ครบถ้วน (ชื่อ, หมวดหมู่, หน่วยการขาย)',
+        en: 'Please fill in name, category, and at least one unit',
+        cn: '请填写名称、类别和至少一个单位',
+    },
+    'seller.preview.title': { th: 'ตัวอย่างหน้าร้าน', en: 'Live preview', cn: '实时预览' },
+    'seller.preview.hint': {
+        th: 'ลูกค้าจะเห็นสินค้าของคุณแบบนี้',
+        en: 'How buyers will see your card',
+        cn: '买家将看到的样子',
+    },
+    'seller.preview.placeholderName': { th: 'ชื่อสินค้าของคุณ', en: 'Your product name', cn: '您的商品名称' },
+    'seller.preview.placeholderDesc': {
+        th: 'คำอธิบายสินค้าจะปรากฏที่นี่',
+        en: 'Your description appears here',
+        cn: '商品描述将显示在此',
+    },
+
+    // Seller — settings
+    'seller.settings.title': { th: 'ตั้งค่าร้านค้า', en: 'Store settings', cn: '店铺设置' },
+    'seller.settings.changePhoto': { th: 'เปลี่ยนรูปโปรไฟล์ร้าน', en: 'Change store photo', cn: '更换店铺照片' },
+    'seller.settings.name': { th: 'ชื่อร้านค้า', en: 'Store name', cn: '店铺名称' },
+    'seller.settings.owner': { th: 'ชื่อเจ้าของ / ผู้ดูแล', en: 'Owner / Caretaker', cn: '店主 / 看护人' },
+    'seller.settings.phone': { th: 'เบอร์โทรศัพท์ติดต่อ', en: 'Contact phone', cn: '联系电话' },
+    'seller.settings.desc': { th: 'รายละเอียด / คำอธิบายร้าน', en: 'Store description', cn: '店铺描述' },
+    'seller.settings.address': { th: 'ที่อยู่ฟาร์ม / ร้านค้า', en: 'Farm / store address', cn: '农场 / 店铺地址' },
+    'seller.settings.pickup': { th: 'จุดรับสินค้า / เวลาทำการ', en: 'Pickup point / hours', cn: '取货点 / 营业时间' },
+    'seller.settings.pickupHint': {
+        th: 'ข้อมูลนี้จะแสดงให้ลูกค้าเห็นเพื่อประกอบการตัดสินใจนัดรับสินค้า',
+        en: 'Shown to buyers when planning pickup',
+        cn: '将展示给买家以便安排取货',
+    },
+    'seller.settings.save': { th: 'บันทึกการตั้งค่า', en: 'Save settings', cn: '保存设置' },
 };
 
 export function LangProvider({ children }) {
