@@ -1,16 +1,22 @@
 import { useState } from 'react';
-import { ArrowLeft, Minus, Plus, ShoppingCart, Info, Star, MapPin, Store as StoreIcon, Phone } from 'lucide-react';
+import { ArrowLeft, Minus, Plus, ShoppingCart, Info, Star, MapPin, Store as StoreIcon, Phone, Leaf } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LangContext';
 
 export default function ProductDetail({ product, store, onBack, onProductClick, onStoreClick, onLoginClick }) {
-    const { user, addToCart, products, stores } = useApp();
+    const { user, addToCart, products, stores, categories } = useApp();
     const { t, locField } = useLang();
     const [selectedUnit, setSelectedUnit] = useState(product.units[0]);
     const [qty, setQty] = useState(1);
     const [activeImg, setActiveImg] = useState(0);
 
     const total = selectedUnit.price * qty;
+    const category = categories.find(c => c.id === product.category);
+    const province = (() => {
+        const addr = locField(store, 'address') || '';
+        if (addr.includes('จ.')) return `จ.${addr.split(' จ.')[1]}`;
+        return addr;
+    })();
 
     const handleAdd = () => {
         if (!user) {
@@ -90,14 +96,35 @@ export default function ProductDetail({ product, store, onBack, onProductClick, 
                     <h1 className="pd-product-name">{locField(product, 'name')}</h1>
                     <p className="pd-product-desc">{locField(product, 'description')}</p>
 
-                    {/* Category badge */}
-                    <div className="pd-category-badge">
-                        {product.category}
+                    {/* Tags row */}
+                    <div className="pd-tags">
+                        {category && (
+                            <span className="pd-tag">
+                                <span aria-hidden="true">{category.icon}</span>
+                                {locField(category, 'name')}
+                            </span>
+                        )}
+                        {province && (
+                            <span className="pd-tag">
+                                <MapPin size={12} color="var(--primary)" />
+                                {province}
+                            </span>
+                        )}
+                        <span className="pd-tag">
+                            <Leaf size={12} color="var(--primary)" />
+                            {t('pd.fresh')}
+                        </span>
                     </div>
 
-                    {/* Unit selection */}
+                    {/* Display price (reflects selected unit) */}
+                    <div className="pd-price-display">
+                        <sup>฿</sup>{selectedUnit.price.toLocaleString()}
+                    </div>
+                    <div className="pd-price-unit">{t('pd.per')} {locField(selectedUnit, 'label')}</div>
+
+                    {/* Unit selection — horizontal pills */}
                     <div className="modal-section-label">{t('modal.selectUnit')}</div>
-                    <div className="unit-options">
+                    <div className="unit-options unit-options--row">
                         {product.units.map((u) => (
                             <div
                                 key={u.id}
@@ -179,11 +206,11 @@ export default function ProductDetail({ product, store, onBack, onProductClick, 
                 </div>
             </div>
 
-            {/* Related Products */}
+            {/* More from this farm */}
             {relatedProducts.length > 0 && (
                 <div className="pd-related">
-                    <h3 className="pd-section-title">
-                        <span>🍊</span> {t('pd.related')}
+                    <h3 className="pd-section-title section-title--display">
+                        <span>🌾</span> {t('pd.relatedFarm')}
                     </h3>
                     <div className="products-grid">
                         {relatedProducts.map((p) => {

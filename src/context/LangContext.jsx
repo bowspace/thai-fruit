@@ -221,6 +221,21 @@ const translations = {
         en: 'You May Also Like',
         cn: '猜你喜欢',
     },
+    'pd.relatedFarm': {
+        th: 'สินค้าอื่นจากสวนนี้',
+        en: 'More from this farm',
+        cn: '该农场其他产品',
+    },
+    'pd.fresh': {
+        th: 'เก็บสดจากสวน',
+        en: 'Direct from farm',
+        cn: '农场直供',
+    },
+    'pd.per': {
+        th: 'ราคาต่อ',
+        en: 'per',
+        cn: '每',
+    },
 
     // Login
     'login.title': {
