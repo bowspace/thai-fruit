@@ -5,70 +5,6 @@ import { api } from '../lib/api';
 const AppContext = createContext(null);
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
 
-// Transform DB snake_case rows to frontend camelCase
-function mapStore(s) {
-    return {
-        id: s.id,
-        ownerId: s.owner_id,
-        name: s.name,
-        nameEn: s.name_en,
-        nameCn: s.name_cn,
-        owner: s.owner_name,
-        description: s.description,
-        descriptionEn: s.description_en,
-        descriptionCn: s.description_cn,
-        address: s.address,
-        addressEn: s.address_en,
-        addressCn: s.address_cn,
-        pickup: s.pickup_info,
-        pickupEn: s.pickup_info_en,
-        pickupCn: s.pickup_info_cn,
-        phone: s.phone,
-        avatar: s.avatar_url || '🏪',
-        rating: parseFloat(s.rating) || 0,
-        totalSales: s.total_sales || 0,
-        isActive: s.is_active,
-        createdAt: s.created_at,
-    };
-}
-
-function mapProduct(p, units = []) {
-    return {
-        id: p.id,
-        storeId: p.store_id,
-        name: p.name,
-        nameEn: p.name_en,
-        nameCn: p.name_cn,
-        description: p.description,
-        descriptionEn: p.description_en,
-        descriptionCn: p.description_cn,
-        category: p.category_id,
-        images: p.images || [],
-        featured: p.is_featured,
-        units: units
-            .filter(u => u.product_id === p.id)
-            .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
-            .map(u => ({
-                id: u.id,
-                label: u.label,
-                labelEn: u.label_en,
-                labelCn: u.label_cn,
-                price: parseFloat(u.price),
-            })),
-    };
-}
-
-function mapCategory(c) {
-    return {
-        id: c.id,
-        name: c.name,
-        nameEn: c.name_en,
-        nameCn: c.name_cn,
-        icon: c.icon,
-        sortOrder: c.sort_order,
-    };
-}
-
 export function AppProvider({ children }) {
     const [user, setUser] = useState(null);
     const [cart, setCart] = useState([]);
@@ -231,147 +167,94 @@ export function AppProvider({ children }) {
     const addProduct = useCallback(async (data) => {
         if (!user) return null;
 
-        // Find user's store
         const store = stores.find(s => s.ownerId === user.id);
         if (!store) {
             showToast('คุณยังไม่มีร้านค้า', 'error');
             return null;
         }
 
-        const { data: newProduct, error } = await supabase
-            .from('products')
-            .insert({
-                store_id: store.id,
+        try {
+            const newProduct = await api.products.create({
                 name: data.name,
-                name_en: data.nameEn || null,
-                description: data.description,
-                description_en: data.descriptionEn || null,
-                category_id: data.category || null,
+                name_en: data.nameEn || undefined,
+                description: data.description || undefined,
+                description_en: data.descriptionEn || undefined,
+                category_id: data.category || undefined,
                 images: data.images?.length ? data.images : [],
                 is_featured: false,
-            })
-            .select()
-            .single();
-
-        if (error) {
-            showToast('เพิ่มสินค้าไม่สำเร็จ: ' + error.message, 'error');
-            return null;
-        }
-
-        // Insert units
-        if (data.units?.length) {
-            const { data: newUnits } = await supabase
-                .from('product_units')
-                .insert(data.units.map((u, i) => ({
-                    product_id: newProduct.id,
+                units: (data.units || []).map((u, i) => ({
                     label: u.label,
-                    label_en: u.labelEn || null,
+                    label_en: u.labelEn || undefined,
                     price: parseFloat(u.price) || 0,
                     sort_order: i + 1,
-                })))
-                .select();
-
-            const mapped = mapProduct(newProduct, newUnits || []);
-            setProducts(prev => [...prev, mapped]);
+                })),
+            });
+            setProducts(prev => [...prev, newProduct]);
             showToast('เพิ่มสินค้า ' + data.name + ' สำเร็จ!');
-            return mapped;
+            return newProduct;
+        } catch (err) {
+            showToast('เพิ่มสินค้าไม่สำเร็จ: ' + err.message, 'error');
+            return null;
         }
-
-        const mapped = mapProduct(newProduct, []);
-        setProducts(prev => [...prev, mapped]);
-        showToast('เพิ่มสินค้า ' + data.name + ' สำเร็จ!');
-        return mapped;
     }, [user, stores, showToast]);
 
     const updateStore = useCallback(async (storeId, data) => {
-        const { error } = await supabase
-            .from('stores')
-            .update({
+        try {
+            const updated = await api.stores.update(storeId, {
                 name: data.name,
-                name_en: data.nameEn,
-                description: data.description,
-                description_en: data.descriptionEn,
-                address: data.address,
-                address_en: data.addressEn,
-                pickup_info: data.pickup,
-                pickup_info_en: data.pickupEn,
-                phone: data.phone,
-                updated_at: new Date().toISOString(),
-            })
-            .eq('id', storeId);
-
-        if (error) {
-            showToast('บันทึกไม่สำเร็จ: ' + error.message, 'error');
-            return;
+                name_en: data.nameEn || undefined,
+                description: data.description || undefined,
+                description_en: data.descriptionEn || undefined,
+                address: data.address || undefined,
+                address_en: data.addressEn || undefined,
+                pickup_info: data.pickup || undefined,
+                pickup_info_en: data.pickupEn || undefined,
+                phone: data.phone || undefined,
+            });
+            setStores(prev => prev.map(s => s.id === storeId ? updated : s));
+            showToast('บันทึกข้อมูลร้านค้าเรียบร้อย');
+        } catch (err) {
+            showToast('บันทึกไม่สำเร็จ: ' + err.message, 'error');
         }
-
-        setStores(prev => prev.map(s => s.id === storeId ? { ...s, ...data } : s));
-        showToast('บันทึกข้อมูลร้านค้าเรียบร้อย');
     }, [showToast]);
 
     const placeOrder = useCallback(async () => {
         if (!user || cart.length === 0) return;
 
-        const grouped = cart.reduce((acc, item) => {
-            if (!acc[item.store.id]) acc[item.store.id] = { store: item.store, items: [] };
-            acc[item.store.id].items.push(item);
-            return acc;
-        }, {});
-
-        for (const { store, items } of Object.values(grouped)) {
-            const total = items.reduce((s, i) => s + i.unit.price * i.qty, 0);
-            const orderNumber = 'TF' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase();
-
-            const { data: order, error } = await supabase
-                .from('orders')
-                .insert({
-                    order_number: orderNumber,
-                    store_id: store.id,
-                    buyer_id: user.id,
-                    total: total,
-                    status: 'pending',
-                })
-                .select()
-                .single();
-
-            if (error) {
-                showToast('สั่งซื้อไม่สำเร็จ: ' + error.message, 'error');
-                return;
-            }
-
-            await supabase.from('order_items').insert(
-                items.map(i => ({
-                    order_id: order.id,
+        try {
+            const newOrders = await api.orders.create({
+                items: cart.map(i => ({
                     product_id: i.product.id,
-                    product_name: i.product.name,
-                    unit_label: i.unit.label,
-                    unit_price: i.unit.price,
+                    unit_id: i.unit.id,
                     qty: i.qty,
-                    subtotal: i.unit.price * i.qty,
-                }))
-            );
-
-            setOrders(prev => [{
-                id: order.id,
-                orderNumber: order.order_number,
-                storeId: store.id,
-                buyerName: user.name,
-                items: items.map(i => ({
-                    productId: i.product.id,
-                    productName: i.product.name,
-                    unit: i.unit.label,
-                    qty: i.qty,
-                    price: i.unit.price,
                 })),
-                total,
-                status: 'pending',
-                date: new Date().toISOString().split('T')[0],
-                note: '',
-            }, ...prev]);
-        }
+            });
 
-        setCart([]);
-        showToast('สั่งซื้อสำเร็จ! ขอบคุณที่ใช้บริการ');
+            // Adapt the API order shape to the local-state shape that Seller.jsx renders today.
+            // (The seller dashboard reads o.buyerName / item.unit / item.price / o.date — kept stable.)
+            const adapted = newOrders.map(o => ({
+                id: o.id,
+                orderNumber: o.orderNumber,
+                storeId: o.storeId,
+                buyerName: user.name,
+                items: o.items.map(it => ({
+                    productId: it.productId,
+                    productName: it.productName,
+                    unit: it.unitLabel,
+                    qty: it.qty,
+                    price: it.unitPrice,
+                })),
+                total: o.total,
+                status: o.status,
+                date: (o.createdAt || new Date().toISOString()).split('T')[0],
+                note: o.note || '',
+            }));
+            setOrders(prev => [...adapted, ...prev]);
+            setCart([]);
+            showToast('สั่งซื้อสำเร็จ! ขอบคุณที่ใช้บริการ');
+        } catch (err) {
+            showToast('สั่งซื้อไม่สำเร็จ: ' + err.message, 'error');
+        }
     }, [user, cart, showToast]);
 
     const value = {
