@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '../config/supabase.js';
+import { mapCategory } from '../utils/mappers.js';
 
 export async function list(req, res, next) {
   try {
@@ -7,7 +8,7 @@ export async function list(req, res, next) {
       .select('*')
       .order('sort_order', { ascending: true });
     if (error) throw error;
-    res.json(data);
+    res.json(data.map(mapCategory));
   } catch (err) {
     next(err);
   }

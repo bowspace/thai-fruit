@@ -1,5 +1,6 @@
 import { supabaseAdmin } from '../config/supabase.js';
 import { paginate } from '../utils/pagination.js';
+import { mapProduct } from '../utils/mappers.js';
 
 export async function listProducts({ q, category, store_id, featured, page, limit }) {
   const { from, to } = paginate(page, limit);
@@ -19,7 +20,7 @@ export async function listProducts({ q, category, store_id, featured, page, limi
   const { data, error, count } = await query;
   if (error) throw error;
 
-  return { products: data, total: count, page, limit };
+  return { products: data.map(mapProduct), total: count, page, limit };
 }
 
 export async function getProductById(id) {
@@ -29,7 +30,7 @@ export async function getProductById(id) {
     .eq('id', id)
     .single();
   if (error) throw error;
-  return data;
+  return mapProduct(data);
 }
 
 export async function getRelatedProducts(productId, categoryId, storeId) {
@@ -41,7 +42,7 @@ export async function getRelatedProducts(productId, categoryId, storeId) {
     .or(`category_id.eq.${categoryId},store_id.eq.${storeId}`)
     .limit(4);
   if (error) throw error;
-  return data;
+  return data.map(mapProduct);
 }
 
 export async function createProduct(storeId, productData) {

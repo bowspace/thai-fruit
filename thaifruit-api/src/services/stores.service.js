@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '../config/supabase.js';
+import { mapStore } from '../utils/mappers.js';
 
 export async function listStores() {
   const { data, error } = await supabaseAdmin
@@ -7,7 +8,7 @@ export async function listStores() {
     .eq('is_active', true)
     .order('created_at', { ascending: false });
   if (error) throw error;
-  return data;
+  return data.map(mapStore);
 }
 
 export async function getStoreById(id) {
@@ -17,9 +18,11 @@ export async function getStoreById(id) {
     .eq('id', id)
     .single();
   if (error) throw error;
-  return data;
+  return mapStore(data);
 }
 
+// Internal: returns the raw row including owner_id (used for ownership lookups).
+// Don't expose this directly via HTTP — controllers should only ever return mapped objects.
 export async function getStoreByOwner(ownerId) {
   const { data, error } = await supabaseAdmin
     .from('stores')
@@ -44,7 +47,7 @@ export async function createStore(ownerId, storeData) {
     .update({ role: 'seller' })
     .eq('id', ownerId);
 
-  return data;
+  return mapStore(data);
 }
 
 export async function updateStore(id, ownerId, updates) {
@@ -56,5 +59,5 @@ export async function updateStore(id, ownerId, updates) {
     .select()
     .single();
   if (error) throw error;
-  return data;
+  return mapStore(data);
 }

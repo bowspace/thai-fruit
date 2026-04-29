@@ -18,8 +18,8 @@ export async function getById(req, res, next) {
     // Also fetch related products
     const related = await productsService.getRelatedProducts(
       product.id,
-      product.category_id,
-      product.store_id,
+      product.category,
+      product.storeId,
     );
 
     res.json({ ...product, related });
