@@ -1,9 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
-import { api } from '../lib/api';
+import { api, tokenStore } from '../lib/api';
 
 const AppContext = createContext(null);
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
 
 export function AppProvider({ children }) {
     const [user, setUser] = useState(null);
@@ -41,114 +39,49 @@ export function AppProvider({ children }) {
         setTimeout(() => setToast(null), 3000);
     }, []);
 
-    // Auth: login via backend API (handles email confirmation properly)
+    // Auth: login via backend API
     const login = useCallback(async (email, password) => {
         try {
-            const res = await fetch(`${API_URL}/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                showToast(data.error || data.message || 'Login failed', 'error');
-                return false;
-            }
-
-            // Set Supabase session so client is authenticated for RLS
-            if (data.session) {
-                await supabase.auth.setSession({
-                    access_token: data.session.access_token,
-                    refresh_token: data.session.refresh_token,
-                });
-            }
-
-            setUser({
-                id: data.user.id,
-                email: email,
-                name: data.user.name || email,
-                nameEn: data.user.name_en,
-                avatar: data.user.avatar_url,
-                role: data.user.role || 'buyer',
-            });
+            const data = await api.auth.login({ email, password });
+            if (data.session?.accessToken) tokenStore.set(data.session.accessToken);
+            setUser({ ...data.user, email: data.user.email || email });
             showToast('เข้าสู่ระบบสำเร็จ! ยินดีต้อนรับ ' + (data.user.name || email));
             return true;
         } catch (err) {
-            showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้', 'error');
+            showToast(err.message || 'Login failed', 'error');
             return false;
         }
     }, [showToast]);
 
-    // Auth: signup via backend API (auto-confirms email)
+    // Auth: signup via backend API
     const signup = useCallback(async (email, password, name, role = 'buyer') => {
         try {
-            const res = await fetch(`${API_URL}/auth/signup`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password, name, role }),
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                showToast(data.error || data.message || 'Signup failed', 'error');
-                return false;
-            }
-
-            // Set Supabase session so client is authenticated for RLS
-            if (data.session) {
-                await supabase.auth.setSession({
-                    access_token: data.session.access_token,
-                    refresh_token: data.session.refresh_token,
-                });
-            }
-
-            setUser({
-                id: data.user.id,
-                email: email,
-                name: name,
-                role: role,
-            });
+            const data = await api.auth.signup({ email, password, name, role });
+            if (data.session?.accessToken) tokenStore.set(data.session.accessToken);
+            setUser({ ...data.user, email: data.user.email || email });
             showToast('สมัครสมาชิกสำเร็จ! ยินดีต้อนรับ ' + name);
             return true;
         } catch (err) {
-            showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้', 'error');
+            showToast(err.message || 'Signup failed', 'error');
             return false;
         }
     }, [showToast]);
 
     const logout = useCallback(async () => {
-        await supabase.auth.signOut();
+        await api.auth.logout();
         setUser(null);
         showToast('ออกจากระบบเรียบร้อย');
     }, [showToast]);
 
-    // Check existing session on mount
+    // Rehydrate session on mount: if a token exists in localStorage, ask the API who we are.
     useEffect(() => {
-        supabase.auth.getSession().then(async ({ data: { session } }) => {
-            if (session?.user) {
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', session.user.id)
-                    .single();
-                setUser({
-                    id: session.user.id,
-                    email: session.user.email,
-                    name: profile?.name || session.user.email,
-                    nameEn: profile?.name_en,
-                    avatar: profile?.avatar_url,
-                    role: profile?.role || 'buyer',
-                    lineId: profile?.line_id,
-                });
-            }
-        });
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-            if (event === 'SIGNED_OUT') {
-                setUser(null);
-            }
-        });
-
-        return () => subscription.unsubscribe();
+        if (!tokenStore.get()) return;
+        api.auth.me()
+            .then(profile => setUser(profile))
+            .catch(() => {
+                // Token expired or invalid — clear and stay logged out.
+                tokenStore.clear();
+            });
     }, []);
 
     const addToCart = useCallback(({ product, store, unit, qty }) => {
