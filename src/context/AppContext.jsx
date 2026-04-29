@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 
 const AppContext = createContext(null);
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
@@ -78,24 +79,20 @@ export function AppProvider({ children }) {
     const [toast, setToast] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Fetch data from Supabase on mount
+    // Fetch data from the backend API on mount
     useEffect(() => {
         async function fetchData() {
             try {
-                const [catRes, storeRes, prodRes, unitRes] = await Promise.all([
-                    supabase.from('categories').select('*').order('sort_order'),
-                    supabase.from('stores').select('*').eq('is_active', true),
-                    supabase.from('products').select('*').eq('is_active', true),
-                    supabase.from('product_units').select('*').order('sort_order'),
+                const [cats, sts, prodResp] = await Promise.all([
+                    api.categories.list(),
+                    api.stores.list(),
+                    api.products.list({ limit: 100 }),
                 ]);
-
-                if (catRes.data) setCategories(catRes.data.map(mapCategory));
-                if (storeRes.data) setStores(storeRes.data.map(mapStore));
-                if (prodRes.data && unitRes.data) {
-                    setProducts(prodRes.data.map(p => mapProduct(p, unitRes.data)));
-                }
+                setCategories(cats);
+                setStores(sts);
+                setProducts(prodResp.products);
             } catch (err) {
-                console.error('Failed to fetch data from Supabase:', err);
+                console.error('Failed to fetch data from API:', err);
             } finally {
                 setLoading(false);
             }
