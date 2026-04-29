@@ -13,8 +13,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **ThaiFruit** — a multilingual online Thai fruit marketplace. Buyers browse/search fruit products from farmer stores, view product details, add to cart, and place orders. Sellers manage their store and products. Supports Thai, English, and Chinese.
 
 **Monorepo with two deployable apps:**
-- **Frontend** (`/`) — React SPA, wired to Supabase directly for reads/mutations, auth routed through the backend API
-- **Backend** (`/thaifruit-api/`) — Node.js + Express REST API with Supabase (PostgreSQL)
+- **Frontend** (`/`) — React SPA. Talks **only** to the Express API (no Supabase SDK in the browser).
+- **Backend** (`/thaifruit-api/`) — Node.js + Express REST API. Single egress to Supabase (PostgreSQL + Auth + Storage).
 
 ## Commands
 
@@ -23,7 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run build` — Production build (output in `dist/`)
 - `npm run lint` — ESLint (flat config, JS/JSX only)
 - `npm run preview` — Preview production build
-- Requires `.env` at repo root — copy from `.env.example` (`VITE_API_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`)
+- Requires `.env` at repo root — copy from `.env.example`. Only `VITE_API_URL` is required.
 
 ### Backend (`cd thaifruit-api`)
 - `npm run dev` — Start API with `--watch` (port 3001)
@@ -49,9 +49,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Back navigation uses `previousPage` ref. Product detail remounts via `key={product.id}`.
 
-**Data:** All data comes from Supabase. `src/lib/supabase.js` exports a client created with `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`. `AppContext` loads `categories`, `stores`, `products`, `product_units` on mount and exposes camelCase objects via `mapStore` / `mapProduct` / `mapCategory` helpers (DB is snake_case). Mutations (`addProduct`, `updateStore`, `placeOrder`) write directly to Supabase under the user's authenticated session for RLS. `src/data/mockData.js` still exists on disk but is **unreferenced** — safe to delete.
+**Data:** All data comes from the Express API. `src/lib/api.js` is a small fetch wrapper that reads `VITE_API_URL`, attaches `Authorization: Bearer <token>` from `localStorage['thaifruit-token']`, and exposes resource-grouped methods (`api.auth.*`, `api.categories.list`, `api.stores.*`, `api.products.*`, `api.orders.*`, `api.upload.image`). The browser bundle no longer imports `@supabase/supabase-js`. `AppContext` calls `api.categories.list()`, `api.stores.list()`, `api.products.list({limit:100})` on mount; mutations (`addProduct`, `updateStore`, `placeOrder`) call the matching `api.*.create / update`. Backend services already return camelCase, so there are no frontend mappers. `src/data/mockData.js` still exists on disk but is **unreferenced** — safe to delete.
 
-**Auth flow:** Signup and login go through the backend API (`POST {VITE_API_URL}/auth/{signup,login}`) so the server can auto-confirm emails and return a Supabase session; the frontend then calls `supabase.auth.setSession()` with the returned tokens so subsequent direct Supabase queries carry the JWT for RLS. `supabase.auth.getSession()` restores the session on mount; logout calls `supabase.auth.signOut()`.
+**Auth flow:** Signup and login go through `api.auth.signup` / `api.auth.login` (which hit `POST {VITE_API_URL}/auth/{signup,login}`). The server creates a Supabase Auth user under the hood, then returns `{ user, session: { accessToken, refreshToken, ... } }`. The frontend stores `accessToken` in `localStorage['thaifruit-token']` (via `tokenStore` in `api.js`); from then on every API call carries it as a Bearer header. On mount, if a token exists, `api.auth.me()` is called to rehydrate the user — failure clears the token. Logout = `tokenStore.clear() + setUser(null)` (no server endpoint yet).
 
 ### Backend (`thaifruit-api/`)
 
@@ -98,10 +98,10 @@ src/
 ├── main.jsx                   — Entry point (LangProvider > AppProvider > App)
 ├── index.css                  — All styles (design system, components, responsive)
 ├── context/
-│   ├── AppContext.jsx          — Global state (auth, cart, products, stores, orders, toast) — reads/writes Supabase
+│   ├── AppContext.jsx          — Global state (auth, cart, products, stores, orders, toast) — talks to Express API only
 │   └── LangContext.jsx         — i18n provider, all translation keys (~100 keys)
 ├── lib/
-│   └── supabase.js             — Supabase client (uses VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY)
+│   └── api.js                  — Fetch wrapper for the Express API; manages bearer token in localStorage
 ├── data/
 │   └── mockData.js             — (ORPHAN — no longer imported; safe to delete)
 ├── pages/
@@ -133,9 +133,12 @@ thaifruit-api/
 │   │   └── errorHandler.js    — Global error handler
 │   ├── routes/                — Express routers (one per resource)
 │   ├── controllers/           — Request handlers (thin, delegate to services)
-│   ├── services/              — Business logic + Supabase queries
+│   ├── services/              — Business logic + Supabase queries (return mapped camelCase)
 │   ├── validators/            — Zod schemas for request validation
-│   └── utils/                 — orderNumber generator, pagination helper
+│   └── utils/
+│       ├── orderNumber.js     — order-number generator
+│       ├── pagination.js      — page/limit → from/to range
+│       └── mappers.js         — snake_case row → camelCase API response (mapStore/mapProduct/mapOrder/...)
 ├── supabase/
 │   └── migrations/            — SQL migrations (001-006), run in Supabase
 ```
@@ -161,9 +164,12 @@ thaifruit-api/
 
 ## Pending / Known Gaps
 
-- `StoreDetail.jsx` and `Seller.jsx` still have hardcoded Thai text (not yet routed through `t()`)
+- `StoreDetail.jsx` and `Seller.jsx` still have hardcoded Thai text (not yet routed through `t()`) — closed by `redesign/all-pages` branch
 - Toast messages in `AppContext.jsx` are hardcoded Thai strings
 - `ProductModal.jsx` is deprecated but still in repo — safe to delete
 - `src/data/mockData.js` is orphaned (no imports) — safe to delete
 - Search bar hidden on mobile with no alternative
-- `Cart.removeFromCart` bug: `Cart.jsx:80` passes the index within the per-store grouped list to `removeFromCart`, but `AppContext.removeFromCart` treats it as an index into the full `cart` array — removes the wrong item when the cart contains multiple stores
+- `Cart.removeFromCart` bug — closed by `redesign/all-pages` branch (uses item.addedAt)
+- No server-side `POST /auth/logout` (frontend only clears its local token)
+- No profile-edit endpoint; no order cancellation; image upload endpoint exists (`POST /upload/image`) but is not yet wired to the seller add-product UI
+- After `migrate/frontend-to-api` lands on main: pull `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` off Vercel — they're no longer used
