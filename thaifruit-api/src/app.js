@@ -15,6 +15,10 @@ import { mountDocs } from './openapi/index.js';
 export function createApp() {
   const app = express();
 
+  // Behind Render / Vercel / nginx, the real client IP is in X-Forwarded-For.
+  // Trust one hop so express-rate-limit and req.ip get the right address.
+  app.set('trust proxy', 1);
+
   // Security
   app.use(helmet());
   app.use(cors({ origin: env.corsOrigin, credentials: true }));
