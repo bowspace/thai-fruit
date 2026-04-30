@@ -165,6 +165,29 @@ thaifruit-api/
 - Backend uses ESM (`"type": "module"`)
 - All credentials in `.env` files, never committed
 
+## Deployment
+
+Two deployable apps, two cloud providers. Both auto-deploy from GitHub.
+
+| Tier | Service | URL pattern | Source |
+|------|---------|-------------|--------|
+| Frontend | Vercel | `https://thaifruit.vercel.app` | `main` (whole repo, Vite build) |
+| Backend | Render | `https://thaifruit-api.onrender.com` | `main` (`thaifruit-api/` rootDir) |
+| Database / Auth / Storage | Supabase Cloud | `https://qtrvjfkimwtvtlwsiadq.supabase.co` | managed |
+
+**Render Blueprint** lives at `render.yaml` at the repo root. To re-create the service from scratch (e.g., on a fresh Render account): https://dashboard.render.com/blueprints → **New Blueprint Instance** → point at this repo. Render auto-fills every setting; you'll be prompted once for the three Supabase secrets (which `sync: false` keeps out of the file).
+
+**Where each env var lives**:
+- **Vercel project settings** → `VITE_API_URL` (the only one)
+- **Render service env vars** → `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `SUPABASE_ANON_KEY` (secrets), plus `STORAGE_BUCKET`, `CORS_ORIGIN`, `NODE_ENV` (declared in `render.yaml`)
+- **Local `.env`** files → only for `npm run dev`. Never committed.
+
+**Updating CORS allowlist**: edit `CORS_ORIGIN` in the Render dashboard; restart isn't needed (Express picks up the value on the next request? No — actually env vars are read at boot. Render auto-restarts when you save an env var change.).
+
+**Free tier sleep**: the Render free plan sleeps after 15 minutes idle. First request after sleep takes ~30 s to wake. Upgrade to the Starter plan ($7/mo) for always-on.
+
+**Trust-proxy**: `app.set('trust proxy', 1)` is set in `src/app.js` so `express-rate-limit` and `req.ip` see the real client IP from `X-Forwarded-For` (Render fronts the service with a load balancer).
+
 ## Known Lint Errors (pre-existing, not blocking)
 
 - `fruit-marketplace_1.jsx` — unused `stores` variable (legacy reference file)
