@@ -20,7 +20,7 @@ export async function login(req, res, next) {
 
 export async function me(req, res, next) {
   try {
-    const profile = await authService.getProfile(req.user.id);
+    const profile = await authService.getProfile(req.user.id, req.user.email);
     res.json(profile);
   } catch (err) {
     next(err);

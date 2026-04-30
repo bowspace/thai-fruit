@@ -1,5 +1,6 @@
 import { supabaseAdmin } from '../config/supabase.js';
 import { generateOrderNumber } from '../utils/orderNumber.js';
+import { mapOrder } from '../utils/mappers.js';
 
 export async function createOrder(buyerId, { items, note }) {
   // Fetch all products and units for the order items
@@ -78,7 +79,7 @@ export async function createOrder(buyerId, { items, note }) {
     createdOrders.push({ ...order, items: orderItems });
   }
 
-  return createdOrders;
+  return createdOrders.map(mapOrder);
 }
 
 export async function listOrders(userId, role) {
@@ -102,7 +103,7 @@ export async function listOrders(userId, role) {
 
   const { data, error } = await query;
   if (error) throw error;
-  return data;
+  return data.map(mapOrder);
 }
 
 export async function getOrderById(id, userId) {
@@ -123,7 +124,7 @@ export async function getOrderById(id, userId) {
     if (store?.owner_id !== userId) throw new Error('Access denied');
   }
 
-  return data;
+  return mapOrder(data);
 }
 
 export async function updateOrderStatus(id, storeOwnerId, status) {
@@ -149,5 +150,5 @@ export async function updateOrderStatus(id, storeOwnerId, status) {
     .select()
     .single();
   if (error) throw error;
-  return data;
+  return mapOrder(data);
 }

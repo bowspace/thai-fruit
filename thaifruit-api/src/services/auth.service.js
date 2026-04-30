@@ -1,4 +1,5 @@
 import { supabaseAdmin, supabaseAnon } from '../config/supabase.js';
+import { mapProfile, mapSession } from '../utils/mappers.js';
 
 export async function signup({ email, password, name, role }) {
   // Create auth user with metadata so the trigger creates the correct profile
@@ -24,8 +25,8 @@ export async function signup({ email, password, name, role }) {
   if (loginError) throw loginError;
 
   return {
-    user: { id: authData.user.id, email, name, role },
-    session: session.session,
+    user: { id: authData.user.id, email, name, role, avatar: null, nameEn: null, nameCn: null, lineId: null },
+    session: mapSession(session.session),
   };
 }
 
@@ -43,17 +44,17 @@ export async function login({ email, password }) {
     .single();
 
   return {
-    user: { ...profile },
-    session: data.session,
+    user: { ...mapProfile(profile), email: data.user.email },
+    session: mapSession(data.session),
   };
 }
 
-export async function getProfile(userId) {
+export async function getProfile(userId, email) {
   const { data, error } = await supabaseAdmin
     .from('profiles')
     .select('*')
     .eq('id', userId)
     .single();
   if (error) throw error;
-  return data;
+  return { ...mapProfile(data), email };
 }
