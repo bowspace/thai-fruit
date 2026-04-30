@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Search, ShoppingCart, Store, User, LogOut, Globe } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LangContext';
+import MobileSearchSheet from './MobileSearchSheet';
 
 const LANGS = [
     { code: 'th', label: '🇹🇭 ไทย' },
@@ -22,6 +23,15 @@ export default function Header({
     const [searchInput, setSearchInput] = useState(searchQuery || '');
     const [scrolled, setScrolled] = useState(false);
     const [showLangMenu, setShowLangMenu] = useState(false);
+    const [showMobileSearch, setShowMobileSearch] = useState(false);
+
+    const submitSearch = (q) => {
+        onSearch(q);
+        if (!searchQuery && q) {
+            onNavigateHome();
+            setTimeout(() => onSearch(q), 0);
+        }
+    };
 
     useEffect(() => {
         setSearchInput(searchQuery || '');
@@ -37,11 +47,7 @@ export default function Header({
 
     const handleSearchSubmit = (e) => {
         e.preventDefault();
-        onSearch(searchInput);
-        if (!searchQuery && searchInput) {
-            onNavigateHome();
-            setTimeout(() => onSearch(searchInput), 0);
-        }
+        submitSearch(searchInput);
     };
 
     const cartCount = cart.reduce((total, item) => total + item.qty, 0);
@@ -67,6 +73,17 @@ export default function Header({
                 </form>
 
                 <div className="header-actions">
+                    {/* Mobile-only search trigger (desktop search-bar above is hidden via CSS) */}
+                    <button
+                        type="button"
+                        className="btn-header btn-header-search-mobile"
+                        onClick={() => setShowMobileSearch(true)}
+                        title={t('search.btn')}
+                        aria-label={t('search.btn')}
+                    >
+                        <Search size={18} />
+                    </button>
+
                     {/* Language Switcher */}
                     <div className="lang-switcher" style={{ position: 'relative' }}>
                         <button
@@ -120,6 +137,14 @@ export default function Header({
                     )}
                 </div>
             </div>
+
+            {showMobileSearch && (
+                <MobileSearchSheet
+                    initialQuery={searchInput}
+                    onSearch={(q) => { setSearchInput(q); submitSearch(q); }}
+                    onClose={() => setShowMobileSearch(false)}
+                />
+            )}
         </header>
     );
 }

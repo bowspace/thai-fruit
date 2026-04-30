@@ -278,6 +278,87 @@ input, textarea, select {
   to { transform: scale(1); }
 }
 
+/* Mobile search trigger — hidden on desktop, shown below 768px (where .search-bar hides) */
+.btn-header-search-mobile {
+  display: none;
+  padding: 9px 12px;
+}
+
+@media (max-width: 768px) {
+  .btn-header-search-mobile {
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+/* ====================================
+   MOBILE SEARCH SHEET
+   ==================================== */
+.search-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg);
+  animation: fadeIn 0.18s var(--ease);
+}
+
+.search-sheet-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.search-sheet-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+.search-sheet-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px; /* prevent iOS zoom on focus */
+  font-family: inherit;
+  color: var(--text);
+  padding: 10px 8px;
+}
+
+.search-sheet-input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-sheet-clear {
+  background: var(--border-light);
+  border: none;
+  border-radius: var(--radius-full);
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.search-sheet-cancel {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 /* ====================================
    CATEGORY TABS
    ==================================== */
@@ -1093,6 +1174,64 @@ input, textarea, select {
   margin-bottom: var(--space-5);
 }
 
+/* Mobile sticky checkout bar — only rendered below 1024px (hidden via display: none on desktop). */
+.cart-mobile-bar {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .cart-mobile-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 16px rgba(26, 107, 60, 0.08);
+    padding: var(--space-3) var(--space-5) calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    animation: slideUp 0.3s var(--ease);
+  }
+  .cart-mobile-bar-total {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .cart-mobile-bar-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .cart-mobile-bar-amount {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--orange);
+    letter-spacing: -0.005em;
+  }
+  .cart-mobile-bar-btn {
+    margin-top: 0;
+    width: auto;
+    flex-shrink: 0;
+    padding: 14px 22px;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  /* Reserve space at the bottom of the page so the bar doesn't cover the last item / summary footnote. */
+  .cart-page {
+    padding-bottom: 96px;
+  }
+}
+
 .cart-summary-deliver {
   display: flex;
   align-items: center;
@@ -1244,6 +1383,21 @@ input, textarea, select {
 /* Orders table */
 .orders-table-wrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Soft fade on the right edge hints there's more content to scroll. */
+  background:
+    linear-gradient(to right, var(--bg-card) 30%, rgba(255, 255, 255, 0)),
+    linear-gradient(to right, rgba(255, 255, 255, 0), var(--bg-card) 70%) 100% 0,
+    radial-gradient(farthest-side at 0 50%, rgba(26, 107, 60, 0.08), rgba(0, 0, 0, 0)),
+    radial-gradient(farthest-side at 100% 50%, rgba(26, 107, 60, 0.08), rgba(0, 0, 0, 0)) 100% 0;
+  background-repeat: no-repeat;
+  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-attachment: local, local, scroll, scroll;
+  border-radius: var(--radius-lg);
+}
+
+.orders-table {
+  min-width: 640px; /* keep columns readable on phones; the wrapper scrolls */
 }
 
 .orders-table {
@@ -2254,62 +2408,37 @@ input, textarea, select {
    RESPONSIVE
    ==================================== */
 @media (max-width: 768px) {
-  .hero-content {
-    padding: 32px 24px;
-  }
-  
-  .hero h1 {
-    font-size: 26px;
-  }
-  
-  .hero-stats {
-    gap: 20px;
-  }
-  
-  .hero-stat-num {
-    font-size: 22px;
-  }
-  
   .form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .header-inner {
     gap: 8px;
   }
-  
+
+  /* Desktop search bar hides; mobile users open MobileSearchSheet via the trigger button. */
   .search-bar {
     display: none;
   }
-  
+
   .stores-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
-  
-  .product-img {
-    height: 140px;
-  }
-  
+
   .footer-inner {
     grid-template-columns: 1fr;
     gap: 24px;
-  }
-  
-  .store-detail-header {
-    flex-direction: column;
-    text-align: center;
-    align-items: center;
   }
 
   .main {
     padding: 16px;
   }
-  
+
   .dashboard-grid {
     grid-template-columns: repeat(2, 1fr);
   }

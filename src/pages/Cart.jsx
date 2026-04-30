@@ -125,6 +125,17 @@ export default function Cart({ onLoginClick }) {
                     </div>
                 </div>
             </div>
+
+            {/* Mobile sticky checkout bar — visible only below 1024px via CSS */}
+            <div className="cart-mobile-bar" role="region" aria-label={t('cart.title')}>
+                <div className="cart-mobile-bar-total">
+                    <span className="cart-mobile-bar-label">{t('cart.total')}</span>
+                    <span className="cart-mobile-bar-amount">฿{grandTotal.toLocaleString()}</span>
+                </div>
+                <button className="btn-checkout cart-mobile-bar-btn" onClick={placeOrder}>
+                    {t('cart.checkout')} <ArrowRight size={18} />
+                </button>
+            </div>
         </div>
     );
 }
