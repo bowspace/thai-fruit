@@ -2085,6 +2085,36 @@ input, textarea, select {
   margin-bottom: 40px;
 }
 
+/* Product detail price + name on phones — the 44px clamp minimum was eating
+   ~12% of the viewport width. Drop to a sensible mobile size; keep the
+   visual weight via Mitr 600 + orange. */
+@media (max-width: 768px) {
+  .pd-product-name {
+    font-size: clamp(22px, 5.4vw, 28px);
+    line-height: 1.25;
+  }
+  .pd-product-desc {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .pd-price-display {
+    font-size: 36px;
+    line-height: 1.05;
+  }
+  .pd-price-display sup {
+    font-size: 0.5em;
+    margin-top: 0.25em;
+  }
+  .pd-tags {
+    gap: 6px;
+    margin-bottom: var(--space-4);
+  }
+  .pd-tag {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+}
+
 @media (max-width: 768px) {
   .pd-layout {
     grid-template-columns: 1fr;
@@ -2300,9 +2330,47 @@ input, textarea, select {
 }
 
 @media (max-width: 768px) {
-  .store-detail-cover { min-height: 240px; }
-  .store-detail-cover-body { padding: var(--space-8); }
-  .store-detail-cover-mark { font-size: 140px; right: -10px; top: -10px; }
+  .store-detail-cover {
+    min-height: 200px;
+    margin-bottom: var(--space-5);
+  }
+  .store-detail-cover-body {
+    padding: var(--space-6) var(--space-5);
+  }
+  .store-detail-cover-name {
+    font-size: clamp(24px, 6.4vw, 32px);
+    line-height: 1.2;
+  }
+  .store-detail-cover-owner {
+    font-size: 13px;
+    margin-bottom: var(--space-2);
+  }
+  .store-detail-cover-rating {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+  .store-detail-cover-mark {
+    font-size: 120px;
+    right: -16px;
+    top: -8px;
+    opacity: 0.13;
+  }
+  .store-detail-ribbon {
+    padding: var(--space-4) var(--space-5);
+    gap: var(--space-3);
+    font-size: 12px;
+  }
+  .store-detail-about {
+    font-size: 14px;
+    line-height: 1.65;
+    margin-bottom: var(--space-6);
+  }
+}
+
+@media (max-width: 480px) {
+  .store-detail-cover { min-height: 180px; }
+  .store-detail-cover-body { padding: var(--space-5) var(--space-4); }
+  .store-detail-cover-mark { font-size: 96px; right: -8px; }
 }
 
 .store-detail-ribbon {
@@ -2413,7 +2481,15 @@ input, textarea, select {
   }
 
   .header-inner {
-    gap: 8px;
+    gap: 6px;
+    padding: 0 12px;
+    height: 60px;
+  }
+  .logo-icon { font-size: 26px; }
+  .logo-text { font-size: 18px; }
+
+  .btn-header {
+    padding: 8px 10px;
   }
 
   /* Desktop search bar hides; mobile users open MobileSearchSheet via the trigger button. */
@@ -2452,14 +2528,17 @@ input, textarea, select {
   .products-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .btn-header span.hide-mobile {
     display: none;
   }
+
+  /* Drop the wordmark on very narrow viewports so the basket icon + 5 action buttons fit. */
+  .logo-text { display: none; }
 }
 
 /* ====================================
@@ -2643,9 +2722,53 @@ input, textarea, select {
   z-index: 1;
 }
 
+/* Hero on phones — the desktop sizes were eating ~80% of the viewport.
+   Compact min-height, tighter padding, much smaller display type, and a
+   restrained watermark so content can breathe. */
 @media (max-width: 768px) {
-  .hero--editorial .hero-content { padding: var(--space-8); }
-  .hero-mark { font-size: 220px; right: -40px; bottom: -40px; }
+  .hero {
+    min-height: 0;
+    margin-bottom: var(--space-5);
+  }
+  .hero--editorial .hero-content {
+    padding: var(--space-6) var(--space-5);
+    max-width: 100%;
+  }
+  .hero-badge {
+    font-size: 11px;
+    padding: 5px 10px;
+    margin-bottom: 12px;
+  }
+  .hero-title {
+    font-size: clamp(22px, 6.5vw, 30px);
+    line-height: 1.2;
+    margin-bottom: var(--space-2);
+  }
+  .hero--editorial .hero-content > p {
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: var(--space-3);
+  }
+  .hero-stats--inline {
+    margin-top: var(--space-4);
+    font-size: 12px;
+    gap: var(--space-2);
+  }
+  .hero-stats--inline b {
+    font-size: 14px;
+  }
+  .hero-mark {
+    font-size: 130px;
+    right: -28px;
+    bottom: -32px;
+    opacity: 0.13;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero--editorial .hero-content { padding: var(--space-5) var(--space-4); }
+  .hero-title { font-size: clamp(20px, 7vw, 26px); }
+  .hero-mark { font-size: 100px; bottom: -22px; }
 }
 
 /* ====================================
