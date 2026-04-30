@@ -73,7 +73,7 @@ export const Store = registry.register(
     rating: z.number().openapi({ example: 4.8 }),
     totalSales: z.number().int().openapi({ example: 1250 }),
     isActive: z.boolean().optional(),
-    createdAt: z.string().datetime().optional(),
+    createdAt: z.string().openapi({ format: 'date-time', example: '2026-04-30T12:00:00.000+00:00' }).optional(),
   })
 );
 
@@ -107,7 +107,7 @@ export const Product = registry.register(
     images: z.array(z.string()),
     featured: z.boolean(),
     isActive: z.boolean().optional(),
-    createdAt: z.string().datetime().optional(),
+    createdAt: z.string().openapi({ format: 'date-time', example: '2026-04-30T12:00:00.000+00:00' }).optional(),
     units: z.array(ProductUnit),
     store: Store.partial().optional(),
   })
@@ -157,8 +157,8 @@ export const Order = registry.register(
     total: z.number(),
     note: z.string().nullable(),
     items: z.array(OrderItem),
-    createdAt: z.string().datetime().optional(),
-    updatedAt: z.string().datetime().optional(),
+    createdAt: z.string().openapi({ format: 'date-time', example: '2026-04-30T12:00:00.000+00:00' }).optional(),
+    updatedAt: z.string().openapi({ format: 'date-time', example: '2026-04-30T12:00:00.000+00:00' }).optional(),
     store: Store.partial().optional(),
   })
 );
@@ -176,7 +176,7 @@ export const Profile = registry.register(
     avatar: z.string().nullable(),
     role: z.enum(['buyer', 'seller']),
     lineId: z.string().nullable(),
-    createdAt: z.string().datetime().optional(),
+    createdAt: z.string().openapi({ format: 'date-time', example: '2026-04-30T12:00:00.000+00:00' }).optional(),
   })
 );
 
@@ -203,7 +203,7 @@ export const HealthResponse = registry.register(
   'HealthResponse',
   z.object({
     status: z.literal('ok'),
-    timestamp: z.string().datetime(),
+    timestamp: z.string().openapi({ format: 'date-time', example: '2026-04-30T12:00:00.000+00:00' }),
   })
 );
 
