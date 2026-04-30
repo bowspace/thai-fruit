@@ -91,8 +91,8 @@ export function AppProvider({ children }) {
         return true;
     }, [user, showToast]);
 
-    const removeFromCart = useCallback((idx) => {
-        setCart(prev => prev.filter((_, i) => i !== idx));
+    const removeFromCart = useCallback((addedAt) => {
+        setCart(prev => prev.filter(item => item.addedAt !== addedAt));
     }, []);
 
     const clearCart = useCallback(() => setCart([]), []);

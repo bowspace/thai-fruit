@@ -197,12 +197,8 @@ Two deployable apps, two cloud providers. Both auto-deploy from GitHub.
 
 ## Pending / Known Gaps
 
-- `StoreDetail.jsx` and `Seller.jsx` still have hardcoded Thai text (not yet routed through `t()`) — closed by `redesign/all-pages` branch
 - Toast messages in `AppContext.jsx` are hardcoded Thai strings
 - `ProductModal.jsx` is deprecated but still in repo — safe to delete
 - `src/data/mockData.js` is orphaned (no imports) — safe to delete
-- Search bar hidden on mobile with no alternative
-- `Cart.removeFromCart` bug — closed by `redesign/all-pages` branch (uses item.addedAt)
 - No server-side `POST /auth/logout` (frontend only clears its local token)
 - No profile-edit endpoint; no order cancellation; image upload endpoint exists (`POST /upload/image`) but is not yet wired to the seller add-product UI
-- After `migrate/frontend-to-api` lands on main: pull `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` off Vercel — they're no longer used
