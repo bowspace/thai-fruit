@@ -28,7 +28,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Backend (`cd thaifruit-api`)
 - `npm run dev` — Start API with `--watch` (port 3001)
 - `npm start` — Start API for production
+- `npm test` — Run Vitest contract tests (one-shot)
+- `npm run test:watch` — Vitest in watch mode
 - Requires `.env` file — copy from `.env.example`
+- API docs (Swagger UI) served at `http://localhost:3001/api/v1/docs` while the API is running. Raw spec at `/api/v1/openapi.json`.
 
 ## Architecture
 
@@ -121,9 +124,11 @@ src/
 ```
 thaifruit-api/
 ├── .env.example               — Template for required env vars
-├── package.json               — Express 5, Supabase JS, Zod, Helmet, CORS
+├── package.json               — Express 5, Supabase JS, Zod, Helmet, CORS, swagger-ui-express, vitest
+├── vitest.config.js           — single-fork pool; tests in test/**/*.test.js
 ├── src/
-│   ├── index.js               — Express app setup, middleware, route mounting
+│   ├── server.js              — Entry point: createApp() + listen
+│   ├── app.js                 — Builds the Express app (middleware + routes); exported for tests
 │   ├── config/
 │   │   ├── env.js             — Validate and export env vars
 │   │   └── supabase.js        — Supabase admin + user-scoped clients
@@ -135,12 +140,17 @@ thaifruit-api/
 │   ├── controllers/           — Request handlers (thin, delegate to services)
 │   ├── services/              — Business logic + Supabase queries (return mapped camelCase)
 │   ├── validators/            — Zod schemas for request validation
+│   ├── openapi/
+│   │   ├── schemas.js         — Response Zod schemas + registry, mirrors utils/mappers.js
+│   │   ├── registry.js        — Wires every Express route into the OpenAPI registry
+│   │   └── index.js           — Builds the spec + mountDocs(app) → /api/v1/docs
 │   └── utils/
 │       ├── orderNumber.js     — order-number generator
 │       ├── pagination.js      — page/limit → from/to range
 │       └── mappers.js         — snake_case row → camelCase API response (mapStore/mapProduct/mapOrder/...)
-├── supabase/
-│   └── migrations/            — SQL migrations (001-006), run in Supabase
+├── test/                      — Vitest contract tests (auth, categories, stores, products, orders, openapi, health)
+└── supabase/
+    └── migrations/            — SQL migrations (001-006), run in Supabase
 ```
 
 ## Conventions
