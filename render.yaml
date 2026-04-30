@@ -1,0 +1,39 @@
+# Render Blueprint — declares the ThaiFruit API as a Web Service.
+# Apply at https://dashboard.render.com/blueprints → "New Blueprint Instance"
+# and point it at this repo. Render will auto-fill every setting below;
+# you'll be prompted for the four `sync: false` secrets once.
+#
+# Reference: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: thaifruit-api
+    runtime: node
+    region: singapore        # Closest to TH users. Other options: oregon, frankfurt, ohio.
+    plan: free               # Sleeps after 15 min idle. Upgrade to "starter" ($7/mo) for always-on.
+    rootDir: thaifruit-api   # Render runs npm install / npm start from this folder.
+    buildCommand: npm install
+    startCommand: npm start  # Resolves to `node src/server.js` per package.json.
+    healthCheckPath: /api/v1/health
+    autoDeploy: true         # Re-deploy on every push to the tracked branch.
+    branch: main             # Change to deploy/render-setup or feat/* while iterating.
+
+    envVars:
+      # Non-secret values can ship in the blueprint:
+      - key: NODE_ENV
+        value: production
+      - key: STORAGE_BUCKET
+        value: product-images
+      # Set this to the comma-separated list of frontend origins allowed by CORS.
+      # Render's UI lets you edit this without re-applying the blueprint.
+      - key: CORS_ORIGIN
+        value: "https://thaifruit.vercel.app,https://thai-fruit.vercel.app"
+
+      # Secrets — Render will prompt for the value when the blueprint is applied.
+      # `sync: false` means: never overwrite this from the blueprint; treat the dashboard as source of truth.
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false

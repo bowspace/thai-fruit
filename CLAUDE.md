@@ -13,8 +13,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **ThaiFruit** — a multilingual online Thai fruit marketplace. Buyers browse/search fruit products from farmer stores, view product details, add to cart, and place orders. Sellers manage their store and products. Supports Thai, English, and Chinese.
 
 **Monorepo with two deployable apps:**
-- **Frontend** (`/`) — React SPA, wired to Supabase directly for reads/mutations, auth routed through the backend API
-- **Backend** (`/thaifruit-api/`) — Node.js + Express REST API with Supabase (PostgreSQL)
+- **Frontend** (`/`) — React SPA. Talks **only** to the Express API (no Supabase SDK in the browser).
+- **Backend** (`/thaifruit-api/`) — Node.js + Express REST API. Single egress to Supabase (PostgreSQL + Auth + Storage).
 
 ## Commands
 
@@ -23,12 +23,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run build` — Production build (output in `dist/`)
 - `npm run lint` — ESLint (flat config, JS/JSX only)
 - `npm run preview` — Preview production build
-- Requires `.env` at repo root — copy from `.env.example` (`VITE_API_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`)
+- Requires `.env` at repo root — copy from `.env.example`. Only `VITE_API_URL` is required.
 
 ### Backend (`cd thaifruit-api`)
 - `npm run dev` — Start API with `--watch` (port 3001)
 - `npm start` — Start API for production
+- `npm test` — Run Vitest contract tests (one-shot)
+- `npm run test:watch` — Vitest in watch mode
 - Requires `.env` file — copy from `.env.example`
+- API docs (Swagger UI) served at `http://localhost:3001/api/v1/docs` while the API is running. Raw spec at `/api/v1/openapi.json`.
 
 ## Architecture
 
@@ -49,9 +52,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Back navigation uses `previousPage` ref. Product detail remounts via `key={product.id}`.
 
-**Data:** All data comes from Supabase. `src/lib/supabase.js` exports a client created with `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`. `AppContext` loads `categories`, `stores`, `products`, `product_units` on mount and exposes camelCase objects via `mapStore` / `mapProduct` / `mapCategory` helpers (DB is snake_case). Mutations (`addProduct`, `updateStore`, `placeOrder`) write directly to Supabase under the user's authenticated session for RLS. `src/data/mockData.js` still exists on disk but is **unreferenced** — safe to delete.
+**Data:** All data comes from the Express API. `src/lib/api.js` is a small fetch wrapper that reads `VITE_API_URL`, attaches `Authorization: Bearer <token>` from `localStorage['thaifruit-token']`, and exposes resource-grouped methods (`api.auth.*`, `api.categories.list`, `api.stores.*`, `api.products.*`, `api.orders.*`, `api.upload.image`). The browser bundle no longer imports `@supabase/supabase-js`. `AppContext` calls `api.categories.list()`, `api.stores.list()`, `api.products.list({limit:100})` on mount; mutations (`addProduct`, `updateStore`, `placeOrder`) call the matching `api.*.create / update`. Backend services already return camelCase, so there are no frontend mappers. `src/data/mockData.js` still exists on disk but is **unreferenced** — safe to delete.
 
-**Auth flow:** Signup and login go through the backend API (`POST {VITE_API_URL}/auth/{signup,login}`) so the server can auto-confirm emails and return a Supabase session; the frontend then calls `supabase.auth.setSession()` with the returned tokens so subsequent direct Supabase queries carry the JWT for RLS. `supabase.auth.getSession()` restores the session on mount; logout calls `supabase.auth.signOut()`.
+**Auth flow:** Signup and login go through `api.auth.signup` / `api.auth.login` (which hit `POST {VITE_API_URL}/auth/{signup,login}`). The server creates a Supabase Auth user under the hood, then returns `{ user, session: { accessToken, refreshToken, ... } }`. The frontend stores `accessToken` in `localStorage['thaifruit-token']` (via `tokenStore` in `api.js`); from then on every API call carries it as a Bearer header. On mount, if a token exists, `api.auth.me()` is called to rehydrate the user — failure clears the token. Logout = `tokenStore.clear() + setUser(null)` (no server endpoint yet).
 
 ### Backend (`thaifruit-api/`)
 
@@ -98,10 +101,10 @@ src/
 ├── main.jsx                   — Entry point (LangProvider > AppProvider > App)
 ├── index.css                  — All styles (design system, components, responsive)
 ├── context/
-│   ├── AppContext.jsx          — Global state (auth, cart, products, stores, orders, toast) — reads/writes Supabase
+│   ├── AppContext.jsx          — Global state (auth, cart, products, stores, orders, toast) — talks to Express API only
 │   └── LangContext.jsx         — i18n provider, all translation keys (~100 keys)
 ├── lib/
-│   └── supabase.js             — Supabase client (uses VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY)
+│   └── api.js                  — Fetch wrapper for the Express API; manages bearer token in localStorage
 ├── data/
 │   └── mockData.js             — (ORPHAN — no longer imported; safe to delete)
 ├── pages/
@@ -121,9 +124,11 @@ src/
 ```
 thaifruit-api/
 ├── .env.example               — Template for required env vars
-├── package.json               — Express 5, Supabase JS, Zod, Helmet, CORS
+├── package.json               — Express 5, Supabase JS, Zod, Helmet, CORS, swagger-ui-express, vitest
+├── vitest.config.js           — single-fork pool; tests in test/**/*.test.js
 ├── src/
-│   ├── index.js               — Express app setup, middleware, route mounting
+│   ├── server.js              — Entry point: createApp() + listen
+│   ├── app.js                 — Builds the Express app (middleware + routes); exported for tests
 │   ├── config/
 │   │   ├── env.js             — Validate and export env vars
 │   │   └── supabase.js        — Supabase admin + user-scoped clients
@@ -133,11 +138,19 @@ thaifruit-api/
 │   │   └── errorHandler.js    — Global error handler
 │   ├── routes/                — Express routers (one per resource)
 │   ├── controllers/           — Request handlers (thin, delegate to services)
-│   ├── services/              — Business logic + Supabase queries
+│   ├── services/              — Business logic + Supabase queries (return mapped camelCase)
 │   ├── validators/            — Zod schemas for request validation
-│   └── utils/                 — orderNumber generator, pagination helper
-├── supabase/
-│   └── migrations/            — SQL migrations (001-006), run in Supabase
+│   ├── openapi/
+│   │   ├── schemas.js         — Response Zod schemas + registry, mirrors utils/mappers.js
+│   │   ├── registry.js        — Wires every Express route into the OpenAPI registry
+│   │   └── index.js           — Builds the spec + mountDocs(app) → /api/v1/docs
+│   └── utils/
+│       ├── orderNumber.js     — order-number generator
+│       ├── pagination.js      — page/limit → from/to range
+│       └── mappers.js         — snake_case row → camelCase API response (mapStore/mapProduct/mapOrder/...)
+├── test/                      — Vitest contract tests (auth, categories, stores, products, orders, openapi, health)
+└── supabase/
+    └── migrations/            — SQL migrations (001-006), run in Supabase
 ```
 
 ## Conventions
@@ -152,6 +165,29 @@ thaifruit-api/
 - Backend uses ESM (`"type": "module"`)
 - All credentials in `.env` files, never committed
 
+## Deployment
+
+Two deployable apps, two cloud providers. Both auto-deploy from GitHub.
+
+| Tier | Service | URL pattern | Source |
+|------|---------|-------------|--------|
+| Frontend | Vercel | `https://thaifruit.vercel.app` | `main` (whole repo, Vite build) |
+| Backend | Render | `https://thaifruit-api.onrender.com` | `main` (`thaifruit-api/` rootDir) |
+| Database / Auth / Storage | Supabase Cloud | `https://qtrvjfkimwtvtlwsiadq.supabase.co` | managed |
+
+**Render Blueprint** lives at `render.yaml` at the repo root. To re-create the service from scratch (e.g., on a fresh Render account): https://dashboard.render.com/blueprints → **New Blueprint Instance** → point at this repo. Render auto-fills every setting; you'll be prompted once for the three Supabase secrets (which `sync: false` keeps out of the file).
+
+**Where each env var lives**:
+- **Vercel project settings** → `VITE_API_URL` (the only one)
+- **Render service env vars** → `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `SUPABASE_ANON_KEY` (secrets), plus `STORAGE_BUCKET`, `CORS_ORIGIN`, `NODE_ENV` (declared in `render.yaml`)
+- **Local `.env`** files → only for `npm run dev`. Never committed.
+
+**Updating CORS allowlist**: edit `CORS_ORIGIN` in the Render dashboard; restart isn't needed (Express picks up the value on the next request? No — actually env vars are read at boot. Render auto-restarts when you save an env var change.).
+
+**Free tier sleep**: the Render free plan sleeps after 15 minutes idle. First request after sleep takes ~30 s to wake. Upgrade to the Starter plan ($7/mo) for always-on.
+
+**Trust-proxy**: `app.set('trust proxy', 1)` is set in `src/app.js` so `express-rate-limit` and `req.ip` see the real client IP from `X-Forwarded-For` (Render fronts the service with a load balancer).
+
 ## Known Lint Errors (pre-existing, not blocking)
 
 - `fruit-marketplace_1.jsx` — unused `stores` variable (legacy reference file)
@@ -164,4 +200,5 @@ thaifruit-api/
 - Toast messages in `AppContext.jsx` are hardcoded Thai strings
 - `ProductModal.jsx` is deprecated but still in repo — safe to delete
 - `src/data/mockData.js` is orphaned (no imports) — safe to delete
-- Search bar hidden on mobile with no alternative (mobile search sheet not yet built)
+- No server-side `POST /auth/logout` (frontend only clears its local token)
+- No profile-edit endpoint; no order cancellation; image upload endpoint exists (`POST /upload/image`) but is not yet wired to the seller add-product UI
